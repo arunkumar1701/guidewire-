@@ -1,4 +1,4 @@
-# GigShield AI: Parametric Insurance for the Gig Economy
+# GiG-I: Parametric Insurance for the Gig Economy
 **AI-Powered Income Protection with Adversarial Fraud Defense**
 
 ---
@@ -13,10 +13,10 @@ India’s gig delivery workforce operates on a **per-task income model**, making
 
 ## 2. Solution Overview
 GigShield AI is a **Zero-Touch Parametric Insurance Platform** that:
-*   ✔ **Detects:** Monitors real-world disruptions via high-fidelity APIs.
-*   ✔ **Predicts:** Uses AI to estimate specific income loss per worker.
-*   ✔ **Triggers:** Automatically initiates payouts without manual filing.
-*   ✔ **Defends:** Prevents pool depletion via multi-layer adversarial fraud defense.
+*   **Detects:** Monitors real-world disruptions via high-fidelity APIs.
+*   **Predicts:** Uses AI to estimate specific income loss per worker.
+*   **Triggers:** Automatically initiates payouts without manual filing.
+*   **Defends:** Prevents pool depletion via multi-layer adversarial fraud defense.
 
 ## 3. Core Architectural Principles
 > *“We minimize **basis risk** by aligning parametric triggers with real, observable income disruption events and minimize **fraud risk** through multi-signal validation instead of single-point verification.”*
@@ -69,7 +69,7 @@ Aligned with the gig worker’s payout cycle:
 | **Network Analysis** | IP/Device Graph | Coordinated fraud rings and sybil attacks. |
 
 ## 10. Signal Redundancy & Validation Logic
-👉 **No single signal can reject a claim.** Our system follows **Multi-Signal Independent Validation** to prevent penalizing genuine workers with poor GPS signals.
+**No single signal can reject a claim.** Our system follows **Multi-Signal Independent Validation** to prevent penalizing genuine workers with poor GPS signals.
 
 ## 11. Fraud Risk Scoring System (FRS)
 We compute a multi-dimensional normalized score (0–1):
@@ -140,11 +140,11 @@ To ensure the **integrity** and **security** of the platform, GigShield AI imple
 *   **Payments:** Razorpay (Sandbox Simulation)
 
 ## 20. System Advantages & Value Proposition
-*   ✔ **Reduces Basis Risk:** Triggers are strictly correlated to income loss.
-*   ✔ **India-Optimized:** Uses IMD standards and UPI-first design.
-*   ✔ **Network-Level Defense:** Detects organized fraud rings, not just individuals.
-*   ✔ **Robust Integrity:** Cybersecurity components ensure a tamper-proof claim pipeline.
-*   ✔ **Zero Friction:** Autonomous workflow from trigger to payout.
+*   **Reduces Basis Risk:** Triggers are strictly correlated to income loss.
+*   **India-Optimized:** Uses IMD standards and UPI-first design.
+*   **Network-Level Defense:** Detects organized fraud rings, not just individuals.
+*   **Robust Integrity:** Cybersecurity components ensure a tamper-proof claim pipeline.
+*   **Zero Friction:** Autonomous workflow from trigger to payout.
 
 ## 21. Mission Statement
-> *“GigShield AI transforms insurance from a reactive claims process into a real-time, AI-driven income protection system—secure against coordinated fraud and optimized for India’s gig workforce.”*
+> *“GiG-I transforms insurance from a reactive claims process into a real-time, AI-driven income protection system—secure against coordinated fraud and optimized for India’s gig workforce.”*
