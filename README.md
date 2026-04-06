@@ -1,150 +1,256 @@
-# GiG-I: Parametric Insurance for the Gig Economy
-**AI-Powered Income Protection with Adversarial Fraud Defense**
+# How We Built Our Project
+
+Our goal was to design a **fully automated parametric insurance platform** for food delivery partners such as Swiggy and Zomato riders. Instead of traditional insurance claims where users must submit proof and wait for manual verification, our system automatically detects disruptions that prevent riders from working and compensates them instantly.
+
+To achieve this, we designed the system as an **agent-driven automation pipeline** that continuously monitors external conditions, validates claims, detects fraud, and processes payouts.
 
 ---
 
-## 1. Problem Statement
-India’s gig delivery workforce operates on a **per-task income model**, making them highly vulnerable to external disruptions such as heavy rainfall, flooding, extreme heat, and urban shutdowns. 
+## System Architecture
 
-**The Impact of Disruptions:**
-*   **Reduced Hours:** Working hours typically drop by 20–30% during events.
-*   **Instant Loss:** Immediate hit to daily and weekly earnings with no safety net.
-*   **Systemic Gap:** Traditional insurance is too slow, claim-heavy, and not designed for short-term income protection.
+The platform consists of five core layers:
 
-## 2. Solution Overview
-GigShield AI is a **Zero-Touch Parametric Insurance Platform** that:
-*   **Detects:** Monitors real-world disruptions via high-fidelity APIs.
-*   **Predicts:** Uses AI to estimate specific income loss per worker.
-*   **Triggers:** Automatically initiates payouts without manual filing.
-*   **Defends:** Prevents pool depletion via multi-layer adversarial fraud defense.
+1. **User Layer**
+2. **Trigger Monitoring Layer**
+3. **Agentic AI Fraud Engine**
+4. **Decision Engine**
+5. **Payout & Notification Layer**
 
-## 3. Core Architectural Principles
-> *“We minimize **basis risk** by aligning parametric triggers with real, observable income disruption events and minimize **fraud risk** through multi-signal validation instead of single-point verification.”*
+Delivery partners only interact with the system during **onboarding and policy purchase**. After that, the entire claims process is handled automatically in the background.
 
-## 4. Parametric Triggers: Region-Specific Calibration
-We use only high-confidence, income-correlated triggers aligned with **IMD (India Meteorological Department)** standards:
+---
 
-| Disruption Type | Trigger Condition | Justification |
-| :--- | :--- | :--- |
-| **Heavy Rain** | > 60 mm/hour OR IMD Heavy Rain Alert | Direct drop in delivery volume/safety. |
-| **Flooding** | Road closure / Waterlogging signals | Physical blockage of delivery routes. |
-| **Extreme Heat** | > 42°C + IMD Heatwave Advisory | Significant drop in worker activity/health risk. |
-| **Urban Shutdown** | Curfew / Official Zone Closure | Access to commercial hubs blocked. |
+## Weekly Policy Model
 
-### Environmental Data Scope Management (AQI)
-*   **AQI is NOT a payout trigger.** High pollution is persistent and would cause basis risk/pool drain.
-*   **Usage:** Only used as a **Risk Scoring feature** and **Premium adjustment signal**. This reduces false payouts and ensures long-term sustainability.
+Gig workers operate on a weekly earning cycle. Our platform allows riders to purchase **weekly protection plans** that insure their expected income.
 
-## 5. Weekly Premium Pricing Model
-Aligned with the gig worker’s payout cycle:
-`Weekly Premium = (Base Rate * Risk Score) + (Coverage Factor * Coverage Amount)`
+Each rider provides:
 
-**AI Adjustments:**
-*   **Location Risk:** Historical disruption frequency in specific clusters.
-*   **Weather Patterns:** 7-day predictive forecasting.
-*   **Worker Activity:** Historical consistency and delivery patterns.
+- operating city  
+- delivery zone  
+- estimated weekly earnings  
+- working hours  
 
-## 6. End-to-End Workflow
-1.  **Onboarding** → 2. **AI Risk Profiling** → 3. **Weekly Policy Creation** → 4. **Real-Time Monitoring** → 5. **Parametric Trigger Activation** → 6. **Multi-Layer Fraud Validation** → 7. **Instant Payout**
+Based on these parameters, the system generates a **dynamic weekly premium** using risk modeling.
 
-## 7. AI System Design
-### 7.1 Risk Prediction Model
-*   **Model:** XGBoost
-*   **Output:** Risk Score (0–1) based on location, seasonality, and vehicle type.
-### 7.2 Income Loss Estimation
-*   **Model:** Gradient Boosting Regression
-*   **Output:** Precise ₹ loss estimate during the disruption window.
+---
 
-## 8. Adversarial Defense & Anti-Spoofing Strategy
-### The Problem Scenario
-*“500 fake GPS claims attempt to drain the payout pool during a legitimate rain event.”* Simple GPS validation is insufficient against sophisticated attackers.
+## Parametric Trigger Monitoring
 
-### 9. Multi-Layer Fraud Defense Architecture
-| Layer | Signal | What It Detects |
-| :--- | :--- | :--- |
-| **Event Validation** | Weather/Traffic APIs | Fake/Simulated disruption events. |
-| **Location Validation** | GPS Trajectory | "Teleportation" or perfectly linear movement. |
-| **Device Integrity** | OS/Root Detection | Use of Magisk, Emulators, or Spoofing tools. |
-| **Behavioral Model** | Activity Patterns | "Ghost workers" active only during claims. |
-| **Network Analysis** | IP/Device Graph | Coordinated fraud rings and sybil attacks. |
+The platform continuously monitors **external disruption signals** using public APIs such as weather and civic alerts.
 
-## 10. Signal Redundancy & Validation Logic
-**No single signal can reject a claim.** Our system follows **Multi-Signal Independent Validation** to prevent penalizing genuine workers with poor GPS signals.
+Examples of triggers include:
 
-## 11. Fraud Risk Scoring System (FRS)
-We compute a multi-dimensional normalized score (0–1):
-`FRS = w1(Event) + w2(Location) + w3(Device) + w4(Behavior) + w5(Network)`
+- heavy rainfall  
+- extreme heat  
+- flooding alerts  
+- local curfews or shutdowns  
 
-## 12. Decision Policy (Research-Calibrated)
-*   **FRS < 0.25:** **Auto-Approve** (Instant Payout).
-*   **0.25 ≤ FRS < 0.55:** **Approve** + Silent Monitoring.
-*   **0.55 ≤ FRS < 0.75:** **Delayed Payout** + Secondary Validation.
-*   **FRS ≥ 0.75:** **HOLD** (Pending manual audit, NOT instant rejection).
+When a trigger exceeds predefined thresholds, the system automatically generates claims for riders operating in the affected zone.
 
-## 13. Hard Rejection Rule
-A claim is rejected **ONLY IF**:
-1.  **FRS > 0.85**
-2.  **AND** At least **2 independent signals** are strongly anomalous (e.g., Fake GPS + Rooted Device).
+For example:
 
-## 14. Coordinated Attack Mitigation (Graph Analytics)
-We use **Graph-Based Analysis** to identify coordinated attacks:
-*   **Nodes:** Workers, Devices, IP Addresses, UPI Accounts.
-*   **Fraud Ring Signal:** Multiple workers + Same IP/Device + Synchronized Claims + Same Zone = **Cluster Flagged**.
+- **Heavy Rain Trigger:** rainfall ≥ 64.5 mm in 24 hours  
+- **Heatwave Trigger:** temperature ≥ 40°C  
 
-## 15. Zero-Trust Validation Pipeline
-```mermaid
-flowchart TD
-    A[Worker Claim Trigger] --> B{Step 1: Event Check}
-    B -->|Verified| C{Step 2: Presence Check}
-    C -->|Verified| D{Step 3: Device Check}
-    D -->|Verified| E{Step 4: Behavior Check}
-    E -->|Verified| F{Step 5: Network Check}
-    
-    F --> G[Fraud Risk Scoring Engine]
-    G --> H{Risk Score}
-    
-    H -->|FRS < 0.25| I[Auto-Approve Claim]
-    H -->|0.25 - 0.75| J[Delay & Manual Review]
-    H -->|FRS > 0.75| K[Block & Flag Account]
-    
-    K --> L[Fraud Cluster Detection]
-    L --> M[Admin Alert System]
+This **parametric approach removes the need for manual claim filing**, enabling instant claim creation.
+
+---
+
+## Agentic AI System
+
+To automate the entire process, we implemented a **multi-agent orchestration architecture**. Each AI agent performs a specialized task within the workflow.
+
+### Monitoring Agent
+Continuously monitors weather APIs and disruption feeds. When a threshold is crossed, it emits a trigger event.
+
+### Claim Generation Agent
+Identifies active policies in the affected zone and automatically creates claim records.
+
+### Fraud Analysis Agent
+Evaluates claims using multiple signals to detect suspicious activity.
+
+### Decision Agent
+Applies risk thresholds and determines whether a claim should be approved, rejected, or analyzed further.
+
+### Payment Agent
+Processes the payout through the payment integration once a claim is approved.
+
+These agents communicate through an orchestration layer, enabling **fully automated claim processing without manual intervention**.
+
+---
+
+## Fraud Risk Scoring Model
+
+To prevent abuse while maintaining fairness, the system calculates a **Fraud Risk Score (FRS)** using multiple independent signals.
+
+$$
+FRS = w_1 \cdot EventScore + w_2 \cdot LocationScore + w_3 \cdot DeviceScore + w_4 \cdot BehaviorScore + w_5 \cdot NetworkScore
+$$
+
+Where:
+
+- **EventScore** validates that the disruption actually occurred  
+- **LocationScore** verifies the rider’s GPS location  
+- **DeviceScore** checks device anomalies or emulator usage  
+- **BehaviorScore** compares the claim against historical activity patterns  
+- **NetworkScore** detects duplicate identities or coordinated fraud rings  
+
+Each signal is normalized between 0 and 1 and weighted according to its reliability.
+
+---
+
+## Fraud Decision Policy
+
+Once the Fraud Risk Score is calculated, the system applies automated thresholds:
+
+- **FRS < 0.30 → Auto-approve claim**
+- **0.30 ≤ FRS < 0.70 → Deep validation pipeline**
+- **FRS ≥ 0.70 + multiple fraud signals → Reject claim**
+
+This ensures that genuine riders receive payouts quickly while suspicious claims are thoroughly analyzed.
+
+---
+
+## Automated Deep Resolution Pipeline
+
+For medium-risk claims, the system runs a deeper automated validation pipeline.
+
+### Step 1 — Deterministic Validation
+
+The backend re-verifies signals using multiple checks:
+
+- cross-check weather triggers from multiple sources  
+- analyze rider GPS trajectory  
+- validate activity logs and working hours  
+- check device integrity signals  
+- verify time-window consistency  
+
+After these checks, the system recomputes an updated score **FRS₂**.
+
+---
+
+### Step 2 — Re-scoring Decision
+
+- **FRS₂ < 0.30 → Approve**
+- **FRS₂ > 0.70 with multiple fraud signals → Reject**
+- otherwise proceed to AI reasoning.
+
+---
+
+### Step 3 — Agentic AI Reasoning
+
+An AI agent acts as a **fraud analyst assistant**. It evaluates the collected evidence and outputs:
+
+- confidence score  
+- decision suggestion  
+- explanation of reasoning  
+
+Example output:
+
+```
+Confidence: 0.82  
+Decision: Likely genuine claim  
+Explanation: GPS trajectory consistent with delivery zone, no device anomalies detected
 ```
 
-## 16. False Positive Protection (Fairness First)
-*   **GPS Drift Tolerance:** ±100m allowed for urban "canyon" interference.
-*   **Review > Reject:** We prioritize investigation over immediate denial.
-*   **Transparency:** Workers are notified of delays, not just silent blocks.
+---
 
-## 17. Attack Response Strategy
-*   **Zone Payout Cap:** Automated ceiling if claim volume exceeds predicted density by >200%.
-*   **Cluster Isolation:** Instantly disconnects all accounts sharing high-risk graph edges.
-*   **Manual Override:** Global switch to shift affected zones to manual verification.
+### Step 4 — Deterministic Final Rule
 
-## 18. Cybersecurity & Data Integrity Architecture
-To ensure the **integrity** and **security** of the platform, GigShield AI implements robust cybersecurity components:
-*   **Data Integrity (Hashing):** All sensor data and GPS logs are hashed using **SHA-256** before being stored, preventing any post-event tampering of location history.
-*   **Secure Communication (TLS 1.3):** All API interactions between the mobile client and backend services are encrypted via **TLS 1.3**, protecting against Man-in-the-Middle (MITM) attacks.
-*   **Identity & Access Management (IAM):** We use **JWT (JSON Web Tokens)** with short-lived access and refresh tokens for worker authentication. Administrative actions require **MFA (Multi-Factor Authentication)**.
-*   **Audit Logging:** An immutable audit trail is maintained for every claim trigger, manual review decision, and payout authorization, ensuring full accountability.
-*   **End-to-End Encryption (E2EE):** Worker PII (Personally Identifiable Information) and UPI details are encrypted at rest using **AES-256-GCM**.
-*   **Rate Limiting & DDoS Protection:** Advanced rate limiting at the API Gateway prevents brute-force attacks on the payout trigger engine.
+- **confidence ≥ 0.75 → approve claim**
+- **confidence ≤ 0.40 → reject claim**
+- **otherwise → retry validation with fresh data**
 
-## 19. Tech Stack
-*   **Frontend:** Next.js (Responsive Mobile-Web)
-*   **Backend:** Node.js + FastAPI (Python)
-*   **ML:** Scikit-learn, XGBoost, Prophet
-*   **DB:** PostgreSQL (Prisma ORM)
-*   **Security:** JWT, SHA-256, TLS 1.3, AES-256
-*   **APIs:** OpenWeatherMap, WAQI, TomTom Traffic
-*   **Payments:** Razorpay (Sandbox Simulation)
+This combination of deterministic rules and AI reasoning provides both **accuracy and explainability**.
 
-## 20. System Advantages & Value Proposition
-*   **Reduces Basis Risk:** Triggers are strictly correlated to income loss.
-*   **India-Optimized:** Uses IMD standards and UPI-first design.
-*   **Network-Level Defense:** Detects organized fraud rings, not just individuals.
-*   **Robust Integrity:** Cybersecurity components ensure a tamper-proof claim pipeline.
-*   **Zero Friction:** Autonomous workflow from trigger to payout.
+---
 
-## 21. Mission Statement
-> *“GiG-I transforms insurance from a reactive claims process into a real-time, AI-driven income protection system—secure against coordinated fraud and optimized for India’s gig workforce.”*
+## End-to-End Automation Workflow
+
+Once a rider purchases a weekly plan, the entire system runs automatically.
+
+1. Rider activates weekly policy  
+2. Monitoring agent scans disruption signals  
+3. Trigger detected in rider’s delivery zone  
+4. Claim automatically generated  
+5. Fraud risk score computed  
+6. Deep validation pipeline executed (if needed)  
+7. Decision agent determines outcome  
+8. Payment agent processes payout  
+9. Rider receives notification  
+
+This creates a **zero-touch insurance experience** where the worker does not need to file claims manually.
+
+---
+
+## Event Replay Mode
+
+To ensure reliable demonstrations during the hackathon, we implemented a **Replay Mode** that allows simulated disruption events.
+
+Judges can trigger events such as:
+
+- heavy rain  
+- heatwave  
+- flood alert  
+
+The system immediately runs the entire pipeline, allowing observers to watch the process from **trigger detection to payout** in real time.
+
+---
+
+## Technology Stack
+
+### Frontend
+- Next.js  
+- React  
+- Tailwind CSS  
+
+### Backend
+- FastAPI / Node.js  
+- REST APIs for claim processing  
+- background event monitoring  
+
+### Database
+- PostgreSQL  
+- stores policies, claims, events, and audit logs  
+
+### AI / ML Layer
+- Python  
+- Scikit-learn / XGBoost  
+- anomaly detection models  
+
+### Agent Framework
+- LangChain  
+- GPT-based reasoning agents  
+
+### External APIs
+- OpenWeatherMap (weather triggers)  
+- CPCB AQI API (risk pricing context)  
+- Google Maps API (zone geolocation)  
+
+### Payments
+- Razorpay sandbox API for simulated payouts  
+
+---
+
+## Challenges We Ran Into
+
+One of the biggest challenges was balancing **automation with fairness**. A fully automated system must prevent fraud while ensuring genuine riders are not blocked from receiving compensation.
+
+To address this, we avoided relying on a single signal such as GPS. Instead, we designed a **multi-signal fraud scoring model** that combines environmental verification, device analysis, behavioral patterns, and network detection.
+
+Another challenge was selecting **triggers that genuinely disrupt delivery operations**. Some environmental signals, such as air pollution levels, may not always affect delivery activity. We therefore focused on triggers that directly impact outdoor work conditions.
+
+Reliability was another critical concern. Real-world APIs may fail or not produce events during a live demonstration. To solve this, we built an **event replay system** that allows controlled simulation of disruption events.
+
+Finally, explainability was essential. Automated insurance decisions must be transparent and auditable. Every claim decision includes the calculated fraud score, contributing signals, and the reasoning produced by the AI agent.
+
+---
+
+## What We Learned
+
+Through this project, we learned that designing insurance systems requires more than just machine learning models. It requires balancing automation, fairness, and trust.
+
+We discovered that combining **parametric triggers, agentic AI workflows, and multi-signal fraud detection** can create a system that protects workers while maintaining financial sustainability.
+
+Our system demonstrates how modern AI-driven infrastructure can transform traditional insurance into a **real-time safety net for the gig economy**.
